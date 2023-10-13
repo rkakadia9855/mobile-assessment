@@ -4,11 +4,12 @@ import {
   addToReadingList,
   clearSearch,
   getAllBooks,
+  getReadingList,
   ReadingListBook,
   searchBooks
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
-import { Book } from '@tmo/shared/models';
+import { Book, ReadingListItem } from '@tmo/shared/models';
 import { Subject, Subscription } from 'rxjs';
  import { debounceTime } from 'rxjs/operators';
 
@@ -23,6 +24,8 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   instantSearchLimitRestricter: Subject<void> = new Subject<void>();
   
   private allBooksSubscription: Subscription;
+  private readingListSubscription: Subscription;
+  readingList: ReadingListItem[];
 
   searchForm = this.fb.group({
     term: ''
@@ -40,6 +43,9 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.allBooksSubscription = this.store.select(getAllBooks).subscribe(books => {
       this.books = books;
+    });
+    this.readingListSubscription = this.store.select(getReadingList).subscribe(readingList => {
+      this.readingList = readingList;
     });
     this.searchForm.get('term').valueChanges
      .pipe(debounceTime(500))
@@ -80,7 +86,16 @@ export class BookSearchComponent implements OnInit, OnDestroy {
     }
   }
 
+  checkBookRead(book: Book): boolean {
+    if (this.readingList) {
+      const readingListItem = this.readingList.find((item) => item.bookId === book.id);
+      return readingListItem ? readingListItem.finished : false;
+    }
+    return false;
+  }
+
   ngOnDestroy() {
     this.allBooksSubscription.unsubscribe();
+    this.readingListSubscription.unsubscribe();
   }
 }
