@@ -75,11 +75,10 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   checkBookRead(book: Book): boolean {
-    this.readingList.forEach(item => {
-      if(book.id === item.bookId) {
-        return item.finished;
-      }
-    });
+    if (this.readingList) {
+      const readingListItem = this.readingList.find((item) => item.bookId === book.id);
+      return readingListItem ? readingListItem.finished : false;
+    }
     return false;
   }
 
