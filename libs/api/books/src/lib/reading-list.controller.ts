@@ -23,7 +23,6 @@ export class ReadingListController {
 
   @Put('/reading-list/:id/finished')
   async markBookAsRead(@Param() params) {
-    console.log("controller called");
     return await this.readingList.markBookAsRead(params.id);
   }
 }
