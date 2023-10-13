@@ -4,6 +4,30 @@ import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import * as ReadingListActions from './reading-list.actions';
 import { ReadingListItem } from '@tmo/shared/models';
 
+class Stack<T> {
+  private items: T[] = [];
+
+  push(item: T): void {
+    this.items.push(item);
+  }
+
+  pop(): T | undefined {
+    return this.items.pop();
+  }
+
+  peek(): T | undefined {
+    return this.items[this.items.length - 1];
+  }
+
+  isEmpty(): boolean {
+    return this.items.length === 0;
+  }
+
+  size(): number {
+    return this.items.length;
+  }
+}
+
 export const READING_LIST_FEATURE_KEY = 'readingList';
 
 export interface State extends EntityState<ReadingListItem> {
@@ -25,6 +49,8 @@ export const initialState: State = readingListAdapter.getInitialState({
   loaded: false,
   error: null
 });
+
+const snapshots: Stack<State> = new Stack<State>();
 
 const readingListReducer = createReducer(
   initialState,
@@ -52,7 +78,12 @@ const readingListReducer = createReducer(
   ),
   on(ReadingListActions.removeFromReadingList, (state, action) =>
     readingListAdapter.removeOne(action.item.bookId, state)
-  )
+    ),
+  on(ReadingListActions.takeSnapshot, (state) => {
+    snapshots.push({ ...state });
+    return state;
+  }),
+  on(ReadingListActions.restoreSnapshot, (state) => { return snapshots.pop()})
 );
 
 export function reducer(state: State | undefined, action: Action) {

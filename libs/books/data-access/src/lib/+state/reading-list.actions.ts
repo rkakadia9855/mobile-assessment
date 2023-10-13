@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Book, ReadingListItem } from '@tmo/shared/models';
+import { State } from './reading-list.reducer';
 
 export const init = createAction('[Reading List] Initialize');
 
@@ -40,4 +41,10 @@ export const failedRemoveFromReadingList = createAction(
 export const confirmedRemoveFromReadingList = createAction(
   '[Reading List API] Confirmed remove from list',
   props<{ item: ReadingListItem }>()
+);
+
+export const takeSnapshot = createAction('[Snapshot] Take Snapshot');
+
+export const restoreSnapshot = createAction(
+  '[Snapshot] Restore Snapshot'  
 );
