@@ -33,15 +33,21 @@
           </div>
           <p [innerHTML]="b.description"></p>
           <div>
-            <button
+            <ng-container *ngIf="!checkBookRead(b) ;else markFinished">
+              <button
               mat-flat-button
               color="primary"
               (click)="addBookToReadingList(b)"
               [disabled]="b.isAdded"
               aria-label="Add"
             >
-              Want to Read
+            Want to Read
             </button>
+            </ng-container>
+            <ng-template #markFinished>
+              <div><strong>Finished Reading</strong></div>
+            </ng-template>
+            
           </div>
         </div>
       </div>

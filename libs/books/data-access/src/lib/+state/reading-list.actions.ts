@@ -48,3 +48,17 @@ export const takeSnapshot = createAction('[Snapshot] Take Snapshot');
 export const restoreSnapshot = createAction(
   '[Snapshot] Restore Snapshot'  
 );
+export const markBookAsRead = createAction(
+  '[Reading List API] mark as read',
+  props<{ item: ReadingListItem }>()
+);
+
+export const confirmMarkedRead = createAction(
+  '[Reading List API] Confirmed as read',
+  props<{ item: ReadingListItem }>()
+);
+
+export const failedToMarkAsRead = createAction(
+  '[Reading List API] Failed to mark as read',
+  props<{ item: ReadingListItem }>()
+);

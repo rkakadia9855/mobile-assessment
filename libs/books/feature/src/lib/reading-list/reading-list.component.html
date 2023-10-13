@@ -19,6 +19,17 @@
       >
         <mat-icon>remove_circle</mat-icon>
       </button>
+      <ng-container *ngIf="b.finished; else markRead">
+        <p>Finished</p>
+      </ng-container>
+      <ng-template #markRead>
+        <button
+        mat-icon-button
+        matTooltip="Mark as read"
+        [attr.aria-label]="'Mark ' + b.title + ' as read'"
+        (click)="markBookAsRead(b)"
+        aria-label="Read"><mat-icon>chrome_reader_mode</mat-icon></button>
+      </ng-template>
     </div>
   </div>
 </ng-container>
