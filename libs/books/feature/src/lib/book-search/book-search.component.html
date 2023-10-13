@@ -1,14 +1,16 @@
 <form [formGroup]="searchForm" (submit)="searchBooks()">
   <mat-form-field floatLabel="never">
     <input
-      autoFocus
-      matInput
-      type="search"
-      placeholder="Search for books to add to your reading list"
-      formControlName="term"
-    />
-    <button mat-icon-button matSuffix>
-      <mat-icon>search</mat-icon>
+       autoFocus
+       matInput
+       (input)="onSearchTermChanged()"
+       type="search"
+       placeholder="Search for books to add to your reading list"
+       formControlName="term"
+       aria-label="Search for books"
+     />
+     <button mat-icon-button matSuffix aria-label="Search">
+       <mat-icon>search</mat-icon>
     </button>
   </mat-form-field>
 </form>
@@ -16,7 +18,7 @@
 <ng-container *ngIf="searchTerm; else empty">
   <div class="book-grid">
     <div class="book" data-testing="book-item" *ngFor="let b of books">
-      <div class="book--title">
+      <div aria-label="Book Title" class="book--title">
         {{ b.title }}
       </div>
       <div class="book--content">
@@ -36,6 +38,7 @@
               color="primary"
               (click)="addBookToReadingList(b)"
               [disabled]="b.isAdded"
+              aria-label="Add"
             >
               Want to Read
             </button>
@@ -48,7 +51,7 @@
 <ng-template #empty>
   <div class="empty">
     <p>
-      Try searching for a topic, for example "<a (click)="searchExample()"
+      Try searching for a topic, for example "<a href="javascript:void(0);" (click)="searchExample()"
         >JavaScript</a
       >".
     </p>
