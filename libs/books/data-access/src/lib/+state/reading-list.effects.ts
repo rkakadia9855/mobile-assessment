@@ -54,12 +54,12 @@ export class ReadingListEffects implements OnInitEffects {
     )
   );
 
-  readBook$ = createEffect(() =>
+  markBookAsRead$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ReadingListActions.markBookAsRead),
       concatMap(({ item }) =>
         this.http.put(`/api/reading-list/${item.bookId}/finished`, {item}).pipe(
-          map(() => ReadingListActions.confirmMarkedRead({ item })),
+          map(() => { console.log("effect called"); return ReadingListActions.confirmMarkedRead({ item }) }),
           catchError(() =>
             of(ReadingListActions.failedToMarkAsRead({ item }))
           )

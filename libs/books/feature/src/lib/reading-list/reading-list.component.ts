@@ -18,8 +18,7 @@ export class ReadingListComponent {
   }
 
   markBookAsRead(item: ReadingListItem) {
-    // item.finished = true;
-    // item.finishedDate = new Date().toISOString();
-    this.store.dispatch(markBookAsRead({item}));
+    const updatedItem: ReadingListItem = { ...item, finished: true, finishedDate: new Date().toISOString()};
+    this.store.dispatch(markBookAsRead({item: updatedItem}));
   }
 }

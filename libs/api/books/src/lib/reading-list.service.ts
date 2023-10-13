@@ -35,12 +35,7 @@ export class ReadingListService {
   async markBookAsRead(id: string): Promise<void> {
     console.log("service file called");
     this.storage.update(list => {
-      return list.map(item => {
-        if(item.bookId === id) {
-          return {...item, finished: true, finishedDate: new Date().toISOString()};
-        }
-        return item;
-      })
+      return list;
     });
   }
 
