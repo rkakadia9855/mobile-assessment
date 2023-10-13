@@ -4,14 +4,16 @@ import {
   addToReadingList,
   clearSearch,
   getAllBooks,
+  getReadingList,
   ReadingListBook,
   restoreSnapshot,
   searchBooks,
   takeSnapshot
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
-import { Book } from '@tmo/shared/models';
-import { Subscription } from 'rxjs';
+import { Book, ReadingListItem } from '@tmo/shared/models';
+import { Subject, Subscription } from 'rxjs';
+ import { debounceTime } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -21,7 +23,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class BookSearchComponent implements OnInit, OnDestroy {
   books: ReadingListBook[];
+  
+  instantSearchLimitRestricter: Subject<void> = new Subject<void>();
+  
   private allBooksSubscription: Subscription;
+  private readingListSubscription: Subscription;
+  readingList: ReadingListItem[];
 
   searchForm = this.fb.group({
     term: ''
@@ -40,6 +47,14 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.allBooksSubscription = this.store.select(getAllBooks).subscribe(books => {
       this.books = books;
+    });
+    this.readingListSubscription = this.store.select(getReadingList).subscribe(readingList => {
+      this.readingList = readingList;
+    });
+    this.searchForm.get('term').valueChanges
+     .pipe(debounceTime(500))
+     .subscribe(() => {
+       this.onSearchTermChanged();
     });
   }
 
@@ -75,12 +90,24 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   onSearchTermChanged() {
-    if(!this.searchForm.value.term) {
+    if(this.searchForm.value.term) {
+      this.store.dispatch(searchBooks({ term: this.searchTerm }));
+    }
+    else {
       this.store.dispatch(clearSearch());
     }
   }
 
+  checkBookRead(book: Book): boolean {
+    if (this.readingList) {
+      const readingListItem = this.readingList.find((item) => item.bookId === book.id);
+      return readingListItem ? readingListItem.finished : false;
+    }
+    return false;
+  }
+
   ngOnDestroy() {
     this.allBooksSubscription.unsubscribe();
+    this.readingListSubscription.unsubscribe();
   }
 }

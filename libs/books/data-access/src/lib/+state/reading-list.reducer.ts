@@ -78,12 +78,16 @@ const readingListReducer = createReducer(
   ),
   on(ReadingListActions.removeFromReadingList, (state, action) =>
     readingListAdapter.removeOne(action.item.bookId, state)
-    ),
+   ),
   on(ReadingListActions.takeSnapshot, (state) => {
     snapshots.push({ ...state });
     return state;
   }),
-  on(ReadingListActions.restoreSnapshot, (state) => { return snapshots.pop()})
+  on(ReadingListActions.restoreSnapshot, (state) => { return snapshots.pop()}),
+  on(ReadingListActions.markBookAsRead, (state, action) => {
+    console.log("reducer called");
+    return readingListAdapter.updateOne({id: action.item.bookId, changes: action.item}, state)
+  })
 );
 
 export function reducer(state: State | undefined, action: Action) {

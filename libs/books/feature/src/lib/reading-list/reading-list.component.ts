@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Store } from '@ngrx/store';
-import { getReadingList, removeFromReadingList, restoreSnapshot, takeSnapshot } from '@tmo/books/data-access';
+
+import { getReadingList, markBookAsRead, removeFromReadingList, restoreSnapshot, takeSnapshot } from '@tmo/books/data-access';
+import { ReadingListItem } from '@tmo/shared/models';
+
 
 @Component({
   selector: 'tmo-reading-list',
@@ -13,8 +16,9 @@ export class ReadingListComponent {
 
   constructor(private readonly store: Store, private readonly snackBar: MatSnackBar) {}
 
-  removeFromReadingList(item) {
-    this.store.dispatch(takeSnapshot());
+
+  removeFromReadingList(item: ReadingListItem) {
+   this.store.dispatch(takeSnapshot());
     this.store.dispatch(removeFromReadingList({ item }));
     const snackBarRef = this.snackBar.open(`${item.title} has been removed from the reading list`, 'Undo', {
       duration: 3000,
@@ -22,5 +26,10 @@ export class ReadingListComponent {
     snackBarRef.onAction().subscribe(() => {
       this.store.dispatch(restoreSnapshot());
     });
+  }
+
+  markBookAsRead(item: ReadingListItem) {
+    const updatedItem: ReadingListItem = { ...item, finished: true, finishedDate: new Date().toISOString()};
+    this.store.dispatch(markBookAsRead({item: updatedItem}));
   }
 }
